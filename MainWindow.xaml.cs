@@ -12,6 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Thorlabs.MotionControl.DeviceManagerCLI;
+using Thorlabs.MotionControl.GenericMotorCLI;
+using Thorlabs.MotionControl.GenericMotorCLI.ControlParameters;
+using Thorlabs.MotionControl.GenericMotorCLI.AdvancedMotor;
+using Thorlabs.MotionControl.GenericMotorCLI.Settings;
 
 namespace wpfscanengine
 {
@@ -20,9 +25,21 @@ namespace wpfscanengine
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        MLS203Stage scopestage;
+        ScanengineViewModel svm;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Ui_loaded(object sender, RoutedEventArgs e)
+        {
+            this.svm = new ScanengineViewModel();
+            this.MLSOscope.DataContext = this.svm;
+
+            
         }
     }
 }
