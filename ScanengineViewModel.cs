@@ -11,23 +11,17 @@ namespace wpfscanengine
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string _currentSerial;
         public string CurrentMLSSerial
         {
-            get { return this._currentSerial; }
+            get { return this.MLSStage.SerialNumber; }
             set
             {
-                if (this.PropertyChanged != null)
-                {
-                    _currentSerial = value;
-
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMLSSerial"));
-                }
+                this.MLSStage.SerialNumber = value;
+                Console.WriteLine("Property SerialNumber changed to:" + this.MLSStage.SerialNumber);
             }
         }
 
         MLS203Stage MLSStage;
-
 
         public ScanengineViewModel(string _ser = "73000001")
         {

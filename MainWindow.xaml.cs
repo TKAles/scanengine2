@@ -32,12 +32,13 @@ namespace wpfscanengine
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new ScanengineViewModel();
         }
 
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
-            this.svm = new ScanengineViewModel();
-            this.MLSOscope.DataContext = this.svm;
+            
+            
 
             
         }
