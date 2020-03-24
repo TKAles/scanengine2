@@ -51,9 +51,9 @@
                         <ComboBoxItem>150 mm / s</ComboBoxItem>
                     </ComboBox>
                     <TextBlock Text="x-position [mm]:" Grid.Column="0" Grid.Row="4" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <TextBlock x:Name="ui_xencoder_mm" Grid.Column="1" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="000.00"/>
+                    <TextBlock x:Name="ui_xencoder_mm" Grid.Column="1" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding XCurrent, Mode=OneWay}"/>
                     <TextBlock Text="y-position [mm]:" Grid.Column="2" Grid.Row="4" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <TextBlock x:Name="ui_yencoder_mm" Grid.Column="3" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="000.00"/>
+                    <TextBlock x:Name="ui_yencoder_mm" Grid.Column="3" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding YCurrent, Mode=OneWay}"/>
                     
                     <TextBlock Text="Current Row:" Grid.Column="0" Grid.Row="5" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock x:Name="ui_currentrow_mm" Grid.Column="1" Grid.Row="5" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0"/>
@@ -69,7 +69,8 @@
                     <TextBox x:Name="ui_ydelta_mm" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding YDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
 
-                    <Button x:Name="ui_connectMLS" Grid.Column="0" Grid.Row="6" Content="Connect MLS203" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                    <Button x:Name="ui_connectMLS" Grid.Column="0" Grid.Row="6" Content="Connect MLS203" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"
+                            Click="UiConnectMLSStage_Click"/>
                     <TextBlock Text="MLS203 Serial:" Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Right" />
                     <TextBox x:Name="ui_mls_serial" Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding CurrentMLSSerial, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="5 0" MinWidth="75" />
@@ -77,9 +78,9 @@
                     <Button x:Name="ui_moveMLS" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Move To:" Padding="10" />
                     <TextBlock Text="Desired X [mm]:" Grid.Column="5" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="Desired Y [mm]:" Grid.Column="6" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                    <TextBox x:Name="ui_mls_xdesired" Grid.Column="5" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="000.00" 
+                    <TextBox x:Name="ui_mls_xdesired" Grid.Column="5" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding XMoveCoord, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" MinWidth="75" />
-                    <TextBox x:Name="ui_mls_ydesired" Grid.Column="6" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="000.00" 
+                    <TextBox x:Name="ui_mls_ydesired" Grid.Column="6" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding YMoveCoord, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" MinWidth="75" />
 
                     <Button x:Name="ui_connectMSO" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Connect MSO" Padding="10" />
@@ -98,10 +99,10 @@
                     <TextBlock Text="is_ready" Grid.Row="9" Grid.Column="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="is_scanning" Grid.Row="9" Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="MSOMLS_ohno" Grid.Row="9" Grid.Column="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="ui_is_MLS_connected" Text="False" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLS_connected" Text="{Binding IsMLSConnected}" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MSO_connected" Text="False" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_MLSX_homed" Text="False" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_MLSY_homed" Text="False" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLSX_homed" Text="{Binding IsMLSXHomed}" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLSY_homed" Text="{Binding IsMLSYHomed}" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_ready" Text="False" Grid.Row="10" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_scanning" Text="False" Grid.Row="10" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_MSOMLS_ohno" Text="False" Grid.Row="10" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />

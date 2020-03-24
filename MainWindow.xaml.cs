@@ -32,15 +32,17 @@ namespace wpfscanengine
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ScanengineViewModel();
+            this.svm = new ScanengineViewModel();
+            DataContext = this.svm;
         }
 
+        private void UiConnectMLSStage_Click(object sender, RoutedEventArgs e)
+        {
+            this.svm.ConnectMLSStage();
+        }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
-            
-            
-
-            
+           
         }
     }
 }

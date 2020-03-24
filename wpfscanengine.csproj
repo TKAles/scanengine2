@@ -47,29 +47,25 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
+    <Reference Include="Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI, Version=1.14.23.16838, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI.dll</HintPath>
+      <HintPath>bin\Debug\Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI.dll</HintPath>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.Benchtop.BrushlessMotorUI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
+    <Reference Include="Thorlabs.MotionControl.Benchtop.BrushlessMotorUI, Version=1.14.23.16838, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.Benchtop.BrushlessMotorUI.dll</HintPath>
+      <HintPath>bin\Debug\Thorlabs.MotionControl.Benchtop.BrushlessMotorUI.dll</HintPath>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.DeviceManagerCLI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
+    <Reference Include="Thorlabs.MotionControl.DeviceManagerCLI, Version=1.14.23.16838, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.DeviceManagerCLI.dll</HintPath>
+      <HintPath>bin\Debug\Thorlabs.MotionControl.DeviceManagerCLI.dll</HintPath>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.DeviceManagerUI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
+    <Reference Include="Thorlabs.MotionControl.GenericMotorCLI, Version=1.14.23.16838, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.DeviceManagerUI.dll</HintPath>
+      <HintPath>bin\Debug\Thorlabs.MotionControl.GenericMotorCLI.dll</HintPath>
     </Reference>
-    <Reference Include="Thorlabs.MotionControl.GenericMotorCLI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
+    <Reference Include="Thorlabs.MotionControl.GenericMotorUI, Version=1.14.23.16838, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.GenericMotorCLI.dll</HintPath>
-    </Reference>
-    <Reference Include="Thorlabs.MotionControl.GenericMotorUI, Version=1.14.18.15642, Culture=neutral, PublicKeyToken=c7ec6d6d6e2435e7, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Thorlabs\Kinesis\Thorlabs.MotionControl.GenericMotorUI.dll</HintPath>
+      <HintPath>bin\Debug\Thorlabs.MotionControl.GenericMotorUI.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
