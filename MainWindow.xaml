@@ -99,7 +99,7 @@
                     <TextBlock Text="is_ready" Grid.Row="9" Grid.Column="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="is_scanning" Grid.Row="9" Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="MSOMLS_ohno" Grid.Row="9" Grid.Column="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="ui_is_MLS_connected" Text="{Binding IsMLSConnected}" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLS_connected" Text="{Binding IsMLSConnected, Mode=OneWay}" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MSO_connected" Text="False" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MLSX_homed" Text="{Binding IsMLSXHomed}" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MLSY_homed" Text="{Binding IsMLSYHomed}" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />

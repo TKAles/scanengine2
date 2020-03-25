@@ -10,8 +10,9 @@ using Thorlabs.MotionControl.GenericMotorCLI.Settings;
 
 namespace wpfscanengine
 {
-	public class MLS203Stage
+	public class MLS203Stage : INotifyPropertyChanged
 	{
+		public event PropertyChangedEventHandler PropertyChanged;
 		private string _serial;
 		public string SerialNumber
 		{
@@ -114,6 +115,16 @@ namespace wpfscanengine
 				Console.ReadLine();
 			}
 			this._isConnected = true;
+			return 0;
+		}
+
+		public int DisconnectStage()
+		{
+			if(this._isConnected == true)
+			{
+				this._microscopemotor.DisconnectTidyUp();
+				this._isConnected = false;
+			}
 			return 0;
 		}
 	}

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel;
+using System.Windows.Data;
 using Thorlabs.MotionControl.DeviceManagerCLI;
 using Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI;
 
 namespace wpfscanengine
 {
-    public partial class ScanengineViewModel 
+    public partial class ScanengineViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public string CurrentMLSSerial
         {
             get { return this.MLSStage.SerialNumber; }
@@ -114,6 +116,9 @@ namespace wpfscanengine
             this.CurrentMLSSerial = _ser;
             this.CurrentMSOAddress = _mso;
 
+            // Subscribe to the required properties
+
+
         }
 
         public void ConnectMLSStage()
@@ -121,7 +126,15 @@ namespace wpfscanengine
             if(MLSStage.IsConnected == false)
             {
                 // Connect to the stage.
-                MLSStage.ConnectStage();
+                MLSStage.ConnectStage();   
+            }
+        }
+
+        public void DisconnectMLSStage()
+        {
+            if(MLSStage.IsConnected == true)
+            {
+                MLSStage.DisconnectStage();
             }
         }
 

@@ -38,7 +38,21 @@ namespace wpfscanengine
 
         private void UiConnectMLSStage_Click(object sender, RoutedEventArgs e)
         {
+            // Connect to the stage, or disconnect from the stage
+            if(this.svm.IsMLSConnected == false)
+            { 
             this.svm.ConnectMLSStage();
+            ui_is_MLS_connected.Text = this.svm.IsMLSConnected.ToString();
+            Button _connectedbutton = (Button)sender;
+            _connectedbutton.Content = "Disconnect MLS203";
+            } else
+            {
+                this.svm.DisconnectMLSStage();
+                ui_is_MLS_connected.Text = this.svm.IsMLSConnected.ToString();
+                Button _disconnectedbutton = (Button)sender;
+                _disconnectedbutton.Content = "Connect MLS203";
+            }
+
         }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
