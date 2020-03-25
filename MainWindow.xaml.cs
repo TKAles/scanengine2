@@ -25,17 +25,16 @@ namespace wpfscanengine
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        MLS203Stage scopestage;
         ScanengineViewModel svm;
         private bool ui_updating = false;
         public MainWindow()
         {
-            InitializeComponent();
             this.svm = new ScanengineViewModel();
             DataContext = this.svm;
+            InitializeComponent();
             ui_updating = true;
             Task _UiUpdateTask = Task.Run(() => this.UiUpdateTask());
+            this.ui_scanspeed.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
 
         }
 
@@ -62,13 +61,27 @@ namespace wpfscanengine
                 } else
                 {
                     this.svm.DisconnectMLSStage();
-                    ui_is_MLS_connected.Text = this.svm.IsMLSConnected.ToString();
-                    Button _disconnectedbutton = (Button)sender;
-                    _disconnectedbutton.Content = "Connect MLS203";
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        ui_is_MLS_connected.Text = this.svm.IsMLSConnected.ToString();
+                        Button _disconnectedbutton = (Button)sender;
+                        _disconnectedbutton.Content = "Connect MLS203";
+                        ui_homeMLS.IsEnabled = true;
+                        ui_homeMLS.Content = "Home MLS203";
+                    });
                 }
             });
         }
 
+        private void UiRecomputeScanStrategyCombo(object sender, SelectionChangedEventArgs e)
+        {
+            this.svm.CalculateScanStrategy();
+            this.Dispatcher.Invoke(() =>
+            {
+                ui_rowsreqd_mm.Text = this.svm.LinesNeeded.ToString();
+                ui_ptsreqd.Text = this.svm.PointsNeeded.ToString();
+            });
+        }
         private void UiMoveToPosition_Click(object sender, RoutedEventArgs e)
         {
             Task _moveTask = Task.Run(() => { this.svm.MoveToPosition(); });
@@ -78,6 +91,12 @@ namespace wpfscanengine
         {
             Task _homeTask = Task.Run(() =>
             {
+                this.Dispatcher.Invoke(() =>
+                {
+                    Button _homing = (Button)sender;
+                    _homing.Content = "Homing...";
+                    _homing.IsEnabled = false;
+                });
                 this.svm.HomeStage();
                 if (this.svm.IsMLSXHomed)
                 {
@@ -96,7 +115,6 @@ namespace wpfscanengine
                 this.Dispatcher.Invoke(() =>
                 {
                     ui_homeMLS.Content = "Homed.";
-                    ui_homeMLS.IsEnabled = false;
                 });
             });
         }
@@ -118,11 +136,75 @@ namespace wpfscanengine
                     this.Dispatcher.Invoke(() =>
                     { ui_is_ready.Text = "False"; });
                 }
+
+                // Read off encoder position and update TextBlocks
+                if(this.svm.IsMLSConnected)
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        ui_xencoder_mm.Text = this.svm.XCurrent.ToString();
+                        ui_yencoder_mm.Text = this.svm.YCurrent.ToString();
+                    });
+                }
             }
+        }
+        private void UiScanVelocityComboChanged(object sender, RoutedEventArgs e)
+        {
+            int _comboindex = ui_scanspeed.SelectedIndex;
+            switch(_comboindex)
+            {
+                case 0:
+                    this.svm.ScanVelocity = 50.0m;
+                    break;
+                case 1:
+                    this.svm.ScanVelocity = 100.0m;
+                    break;
+                case 2:
+                    this.svm.ScanVelocity = 200.0m;
+                    break;
+            }
+            this.svm.CalculateScanStrategy();
+        }
+
+        private void UiScanPitchComboChanged(object sender, RoutedEventArgs e)
+        {
+            int _pitchindex = ui_scanpitch.SelectedIndex;
+            switch(_pitchindex)
+            {
+                case 0:
+                    this.svm.ScanPitch = 0.05m;
+                    break;
+                case 1:
+                    this.svm.ScanPitch = 0.10m;
+                    break;
+                case 2:
+                    this.svm.ScanPitch = 0.25m;
+                    break;
+            }
+        }
+        private void UiRecomputeScanStrategy(object sender, TextChangedEventArgs e)
+        {
+            Console.WriteLine("UiRecomputeScanStrategy invoked....");
+
+            // Get the latest values
+            this.svm.YDelta = Convert.ToDecimal(ui_ydelta_mm.Text);
+            this.svm.XDelta = Convert.ToDecimal(ui_xdelta_mm.Text);
+
+            this.svm.CalculateScanStrategy();
+            this.Dispatcher.Invoke(() =>
+            {
+                ui_rowsreqd_mm.Text = this.svm.LinesNeeded.ToString();
+                ui_ptsreqd.Text = this.svm.PointsNeeded.ToString();
+            });
         }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
            
+        }
+
+        private void ui_scanpitch_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

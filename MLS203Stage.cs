@@ -64,6 +64,17 @@ namespace wpfscanengine
 		private int _mvmtTimeoutMillis = 15000;
 		private int _pollFrequency = 100;
 
+		public decimal XPosition
+		{
+			get { return _stepoverchannel.Position; }
+		}
+
+		public decimal YPosition
+		{ 
+			get { return _scanningchannel.Position; }
+		}
+
+
 		private bool _pollingactive = false;
 
 		public MLS203Stage(string _ser = "73000001")
@@ -118,18 +129,17 @@ namespace wpfscanengine
 				Console.WriteLine("Press <ENTER> to continue execution.");
 				Console.ReadLine();
 			}
-			this._isConnected = true;
 
 			// Setup the axes
 			// X - Stepover Axis
 			// Y - Scanning Axis
-			this._stepoverchannel = this._microscopemotor.GetChannel(1);
+			this._stepoverchannel = this._microscopemotor.GetChannel(2);
 			this._stepoverchannel.StartPolling(this._pollFrequency);
 			if(!this._stepoverchannel.IsSettingsInitialized())
 			{
 				this._stepoverchannel.WaitForSettingsInitialized(this._initTimeoutMillis);
 			}
-			this._scanningchannel = this._microscopemotor.GetChannel(2);
+			this._scanningchannel = this._microscopemotor.GetChannel(1);
 			this._scanningchannel.StartPolling(this._pollFrequency);
 			if(!this._scanningchannel.IsSettingsInitialized())
 			{
@@ -141,6 +151,7 @@ namespace wpfscanengine
 			// Load the motor configurations off the device
 			this._stepoverconfig = this._stepoverchannel.GetMotorConfiguration(this._stepoverchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			this._scanningconfig = this._scanningchannel.GetMotorConfiguration(this._scanningchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
+			this._isConnected = true;
 			return 0;
 
 			// Start various stage polling functions
@@ -189,8 +200,15 @@ namespace wpfscanengine
 		{
 			if(this._isConnected)
 			{
-				_stepoverchannel.MoveTo(_reqXCoord, this._mvmtTimeoutMillis);
-				_scanningchannel.MoveTo(_reqYCoord, this._mvmtTimeoutMillis);
+				try
+				{ 
+					_stepoverchannel.MoveTo(_reqXCoord, this._mvmtTimeoutMillis);
+					_scanningchannel.MoveTo(_reqYCoord, this._mvmtTimeoutMillis);
+				} catch (InvalidPositionException)
+				{
+					// TODO: Add exception handling for invalid positions.
+					return -1;
+				}
 			}
 			return 0;
 		}

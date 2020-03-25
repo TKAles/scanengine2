@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Thorlabs.MotionControl.DeviceManagerCLI;
@@ -45,6 +46,7 @@ namespace wpfscanengine
         private decimal _mtx = 0.000m;
         private decimal _mty = 0.000m;
 
+        private decimal _heliosfreq = 20000.0m;
         // Accessors for the coords
         public decimal XOrigin
         {
@@ -70,12 +72,10 @@ namespace wpfscanengine
         public decimal XCurrent
         {
             get { return _xc; }
-            set { _xc = value; }
         }
         public decimal YCurrent
         {
             get { return _yc; }
-            set { _yc = value; }
         }
         public decimal XMoveCoord
         {
@@ -95,12 +95,10 @@ namespace wpfscanengine
         {
             get { return MLSStage.IsConnected; }
         }
-
         public bool IsMLSXHomed
         {
             get { return MLSStage.IsXHomed; }
         }
-
         public bool IsMLSYHomed
         {
             get { return MLSStage.IsYHomed; }
@@ -109,11 +107,43 @@ namespace wpfscanengine
         {
             get { return MLSStage.IsHomed; }
         }
-
         public bool IsReady
         {
             get { return this.MLSStage.IsXHomed && this.MLSStage.IsYHomed; }
         }
+
+        // Scan strategy information
+        private int _linesneeded = 0;
+        public int LinesNeeded
+        {
+            get { return _linesneeded; }
+        }
+
+        private decimal _scanpitch = 0.00m;
+        private decimal _scanvelocity = 0.00m;
+        private int _pointsneeded = 0;
+
+        public decimal ScanPitch
+        {
+            get { return _scanpitch; }
+            set { _scanpitch = value; }
+
+        }
+
+        public decimal ScanVelocity
+        { 
+            get { return _scanvelocity; }
+            set { _scanvelocity = value;
+                Console.WriteLine("Scan Velocity set to " + value + " mm/s");
+            }
+        }
+
+        public int PointsNeeded
+        {
+            get { return _pointsneeded;  }
+        }
+
+        private bool _pollingactive = false;
 
         public ScanengineViewModel(string _ser = "73000001", string _mso = "not set!")
         {
@@ -122,8 +152,10 @@ namespace wpfscanengine
             this.CurrentMSOAddress = _mso;
 
             // Subscribe to the required properties
-
-
+            Task _positionPolling = Task.Run(() =>
+            {
+                this.StartEncoderPolling();
+            });
         }
 
         public void ConnectMLSStage()
@@ -139,12 +171,14 @@ namespace wpfscanengine
         {
             if(MLSStage.IsConnected == true)
             {
+                // Disconnect the stage.
                 MLSStage.DisconnectStage();
             }
         }
 
         public void HomeStage()
         {
+            // Home the stage if connected.
             if(MLSStage.IsConnected == true)
             {
                 MLSStage.HomeStage();
@@ -156,5 +190,32 @@ namespace wpfscanengine
             MLSStage.MoveStageTo(this.XMoveCoord, this.YMoveCoord);
         }
 
+        public void StartEncoderPolling()
+        {
+            _pollingactive = true;
+            while(this._pollingactive == true)
+            {
+                if(this.MLSStage.IsConnected)
+                { 
+                    _xc = this.MLSStage.XPosition;
+                    _yc = this.MLSStage.YPosition;
+                    Thread.Sleep(100);
+                }
+            }
+        }
+
+        public void CalculateScanStrategy()
+        {
+            if(_yd != 0)
+            {
+                _linesneeded = (int)Math.Ceiling((_xd / _scanpitch));
+                _pointsneeded = Decimal.ToInt32((_yd / (_scanvelocity / _heliosfreq)));
+            } else
+            {
+                _pointsneeded = 0;
+            }
+            return;
+        }
+        
     }
 }
