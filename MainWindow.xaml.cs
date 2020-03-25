@@ -54,6 +54,19 @@ namespace wpfscanengine
             }
 
         }
+
+        private void UiHomeMLSStage_Click(object sender, RoutedEventArgs e)
+        {
+            this.svm.HomeStage();
+            if(this.svm.IsMLSXHomed)
+            {
+                ui_is_MLSX_homed.Text = this.svm.IsMLSXHomed.ToString();
+            }
+            if(this.svm.IsMLSYHomed)
+            {
+                ui_is_MLSY_homed.Text = this.svm.IsMLSYHomed.ToString();
+            }
+        }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
            

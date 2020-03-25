@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 
 using Thorlabs.MotionControl.DeviceManagerCLI;
 using Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI;
@@ -7,6 +8,7 @@ using Thorlabs.MotionControl.GenericMotorCLI;
 using Thorlabs.MotionControl.GenericMotorCLI.ControlParameters;
 using Thorlabs.MotionControl.GenericMotorCLI.AdvancedMotor;
 using Thorlabs.MotionControl.GenericMotorCLI.Settings;
+
 
 namespace wpfscanengine
 {
@@ -115,6 +117,28 @@ namespace wpfscanengine
 				Console.ReadLine();
 			}
 			this._isConnected = true;
+
+			// Setup the axes
+			// X - Stepover Axis
+			// Y - Scanning Axis
+			this._stepoverchannel = this._microscopemotor.GetChannel(1);
+			this._stepoverchannel.StartPolling(this._pollFrequency);
+			if(!this._stepoverchannel.IsSettingsInitialized())
+			{
+				this._stepoverchannel.WaitForSettingsInitialized(this._initTimeoutMillis);
+			}
+			this._scanningchannel = this._microscopemotor.GetChannel(2);
+			this._scanningchannel.StartPolling(this._pollFrequency);
+			if(!this._scanningchannel.IsSettingsInitialized())
+			{
+				this._scanningchannel.WaitForSettingsInitialized(this._initTimeoutMillis);
+			}
+			// Enable both axes
+			this._stepoverchannel.EnableDevice();
+			this._scanningchannel.EnableDevice();
+			// Load the motor configurations off the device
+			this._stepoverconfig = this._stepoverchannel.GetMotorConfiguration(this._stepoverchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
+			this._scanningconfig = this._scanningchannel.GetMotorConfiguration(this._scanningchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			return 0;
 		}
 
@@ -124,6 +148,29 @@ namespace wpfscanengine
 			{
 				this._microscopemotor.DisconnectTidyUp();
 				this._isConnected = false;
+			}
+			return 0;
+		}
+
+		public int HomeStage()
+		{
+			if(this._isConnected == true)
+			{
+				this._stepoverchannel.Home(this._homingTimeoutMillis);
+				while(this._stepoverchannel.IsDeviceBusy)
+				{
+					Thread.Sleep(250);
+				}
+				this._isXHomed = true;
+				this._scanningchannel.Home(this._homingTimeoutMillis);
+				while(this._scanningchannel.IsDeviceBusy)
+				{
+					Thread.Sleep(250);
+				}
+				this._isYHomed = true;
+			} else
+			{
+				// Do something else. Not sure what yet.
 			}
 			return 0;
 		}

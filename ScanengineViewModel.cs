@@ -138,5 +138,14 @@ namespace wpfscanengine
             }
         }
 
+        public void HomeStage()
+        {
+            if(MLSStage.IsConnected == true)
+            {
+                MLSStage.HomeStage();
+
+            }
+        }
+
     }
 }
