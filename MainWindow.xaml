@@ -76,7 +76,8 @@
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="5 0" MinWidth="75" />
                     <Button x:Name="ui_homeMLS" Grid.Column="3" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Home Stage" Padding="10" 
                             Click="UiHomeMLSStage_Click"/>
-                    <Button x:Name="ui_moveMLS" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Move To:" Padding="10" />
+                    <Button x:Name="ui_moveMLS" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Move To:" Padding="10"
+                            Click="UiMoveToPosition_Click"/>
                     <TextBlock Text="Desired X [mm]:" Grid.Column="5" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="Desired Y [mm]:" Grid.Column="6" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBox x:Name="ui_mls_xdesired" Grid.Column="5" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding XMoveCoord, Mode=TwoWay}" 
@@ -104,7 +105,7 @@
                     <TextBlock x:Name="ui_is_MSO_connected" Text="False" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MLSX_homed" Text="{Binding IsMLSXHomed}" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MLSY_homed" Text="{Binding IsMLSYHomed}" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_ready" Text="False" Grid.Row="10" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_ready" Text="{Binding IsReady}" Grid.Row="10" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_scanning" Text="False" Grid.Row="10" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_MSOMLS_ohno" Text="False" Grid.Row="10" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
 

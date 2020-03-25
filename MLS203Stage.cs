@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Thorlabs.MotionControl.DeviceManagerCLI;
 using Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI;
@@ -63,6 +64,7 @@ namespace wpfscanengine
 		private int _mvmtTimeoutMillis = 15000;
 		private int _pollFrequency = 100;
 
+		private bool _pollingactive = false;
 
 		public MLS203Stage(string _ser = "73000001")
 		{
@@ -140,6 +142,10 @@ namespace wpfscanengine
 			this._stepoverconfig = this._stepoverchannel.GetMotorConfiguration(this._stepoverchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			this._scanningconfig = this._scanningchannel.GetMotorConfiguration(this._scanningchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			return 0;
+
+			// Start various stage polling functions
+			this._pollingactive = true;
+			Task _pollStage = Task.Run(() => this.StageFlagPoller());
 		}
 
 		public int DisconnectStage()
@@ -171,6 +177,20 @@ namespace wpfscanengine
 			} else
 			{
 				// Do something else. Not sure what yet.
+			}
+			return 0;
+		}
+
+		public void StageFlagPoller()
+		{
+			return;
+		}
+		public int MoveStageTo(decimal _reqXCoord, decimal _reqYCoord)
+		{
+			if(this._isConnected)
+			{
+				_stepoverchannel.MoveTo(_reqXCoord, this._mvmtTimeoutMillis);
+				_scanningchannel.MoveTo(_reqYCoord, this._mvmtTimeoutMillis);
 			}
 			return 0;
 		}
