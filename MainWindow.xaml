@@ -65,10 +65,11 @@
                     <TextBlock x:Name="ui_ptsreqd" Grid.Column="5" Grid.Row="4" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Text="0" Margin="5 0"/>
                     <TextBox x:Name="ui_xorigin_mm" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
-                    <TextBox x:Name="ui_yorigin_mm" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                    <TextBox x:Name="ui_xdelta_mm" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" 
+                             TextChanged="UiRecomputeScanStrategy"/>
+                    <TextBox x:Name="ui_yorigin_mm" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding YOrigin, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
-                    <TextBox x:Name="ui_xdelta_mm" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
                     <TextBox x:Name="ui_ydelta_mm" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding YDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" 
                              TextChanged="UiRecomputeScanStrategy"/>
@@ -114,7 +115,7 @@
                     <TextBlock x:Name="ui_MSOMLS_ohno" Text="False" Grid.Row="10" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
 
                     <Button x:Name="ui_start_scan" Content="Begin Scan" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" 
-                            HorizontalAlignment="Stretch" FontSize="14" Padding="10" />
+                            HorizontalAlignment="Stretch" FontSize="14" Padding="10" Click="UiScanProcessStart"/>
                     <Button x:Name="ui_abort_scan" Content="Abort Scan" Grid.Row="8" Grid.Column="5" Grid.ColumnSpan="2" VerticalAlignment="Center" 
                             HorizontalAlignment="Stretch" FontSize="14" Padding="10" />
                 </Grid>

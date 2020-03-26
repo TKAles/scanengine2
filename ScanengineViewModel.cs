@@ -190,6 +190,10 @@ namespace wpfscanengine
             MLSStage.MoveStageTo(this.XMoveCoord, this.YMoveCoord);
         }
 
+        public void MoveSingle(int _axis, decimal _coord)
+        {
+            MLSStage.MoveSingle(_axis, _coord);
+        }
         public void StartEncoderPolling()
         {
             _pollingactive = true;
@@ -208,12 +212,12 @@ namespace wpfscanengine
         {
             if(_yd != 0)
             {
-                _linesneeded = (int)Math.Ceiling((_xd / _scanpitch));
-                _pointsneeded = Decimal.ToInt32((_yd / (_scanvelocity / _heliosfreq)));
+                _pointsneeded = Decimal.ToInt32((_yd / (_scanvelocity / _heliosfreq))) + 1;
             } else
             {
                 _pointsneeded = 0;
             }
+            _linesneeded = (int)(_xd / _scanpitch);
             return;
         }
         

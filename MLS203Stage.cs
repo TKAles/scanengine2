@@ -156,7 +156,6 @@ namespace wpfscanengine
 
 			// Start various stage polling functions
 			this._pollingactive = true;
-			Task _pollStage = Task.Run(() => this.StageFlagPoller());
 		}
 
 		public int DisconnectStage()
@@ -192,10 +191,6 @@ namespace wpfscanengine
 			return 0;
 		}
 
-		public void StageFlagPoller()
-		{
-			return;
-		}
 		public int MoveStageTo(decimal _reqXCoord, decimal _reqYCoord)
 		{
 			if(this._isConnected)
@@ -211,6 +206,17 @@ namespace wpfscanengine
 				}
 			}
 			return 0;
+		}
+
+		public void MoveSingle(int _axis, decimal _reqCoord)
+		{
+			if(_axis == 0)
+			{
+				this._stepoverchannel.MoveTo(_reqCoord, this._mvmtTimeoutMillis);
+			} else if (_axis == 1)
+			{
+				this._scanningchannel.MoveTo(_reqCoord, this._mvmtTimeoutMillis);
+			}
 		}
 	}
 }

@@ -32,10 +32,11 @@ namespace wpfscanengine
             this.svm = new ScanengineViewModel();
             DataContext = this.svm;
             InitializeComponent();
+            // Start the encoder update task
             ui_updating = true;
             Task _UiUpdateTask = Task.Run(() => this.UiUpdateTask());
+            this.ui_scanpitch.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
             this.ui_scanspeed.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
-
         }
 
         private void UiConnectMLSStage_Click(object sender, RoutedEventArgs e)
@@ -182,11 +183,12 @@ namespace wpfscanengine
                     break;
             }
         }
+
         private void UiRecomputeScanStrategy(object sender, TextChangedEventArgs e)
         {
-            Console.WriteLine("UiRecomputeScanStrategy invoked....");
-
             // Get the latest values
+            try
+            { 
             this.svm.YDelta = Convert.ToDecimal(ui_ydelta_mm.Text);
             this.svm.XDelta = Convert.ToDecimal(ui_xdelta_mm.Text);
 
@@ -196,15 +198,42 @@ namespace wpfscanengine
                 ui_rowsreqd_mm.Text = this.svm.LinesNeeded.ToString();
                 ui_ptsreqd.Text = this.svm.PointsNeeded.ToString();
             });
+            } catch (NullReferenceException ex)
+            {
+                return;
+            }
+        }
+
+        private void UiScanProcessStart(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("X-Origin: " + this.svm.XOrigin + " X-Delta: " + this.svm.XDelta);
+            Console.WriteLine("Y-Origin: " + this.svm.YOrigin + " Y-Delta: " + this.svm.YDelta);
+            Console.WriteLine("Rows to Scan: " + this.svm.LinesNeeded + " Points per row: " + this.svm.PointsNeeded);
+            Task _scanningTask = Task.Run(() =>
+            {
+                decimal _startScan = this.svm.YOrigin;
+                decimal _endScan = _startScan + this.svm.YDelta;
+                decimal _startStepover = this.svm.XOrigin;
+
+                for (int rows = 0; rows < this.svm.LinesNeeded; rows++)
+                {
+                    decimal _currentRowPosition = _startStepover + this.svm.ScanPitch * rows;
+                    Console.WriteLine("Row Coordinate: " + _currentRowPosition.ToString());
+                    // Move to beginning of scan
+                    Console.WriteLine("Moving to: Y: " + _startScan);
+                    this.svm.MoveSingle(0, _startScan);
+                    Console.WriteLine("Moving to: X: " + _currentRowPosition);
+                    this.svm.MoveSingle(1, _currentRowPosition);
+                    Console.WriteLine("Starting Scan of line " + rows.ToString());
+                    this.svm.MoveSingle(0, _endScan);
+                }
+            });
+
         }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
            
         }
 
-        private void ui_scanpitch_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }
