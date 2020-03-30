@@ -240,9 +240,7 @@ namespace wpfscanengine
                 /*
                  * SCAN ENGINE LOGIC
                  */
-
-                String _savePath = "C:/TestScan";
-                String _lineNumberFormat = "00000";
+;
                 for (int rows = 0; rows < this.svm.LinesNeeded; rows++)
                 {
                     this.Dispatcher.Invoke(() =>
@@ -258,23 +256,17 @@ namespace wpfscanengine
                     Console.WriteLine("Moving to: X: " + _currentRowPosition);
                     this.svm.MoveSingle(1, _currentRowPosition);
                     // Stage is at the beginning of the scan. Setup and arm oscillscope for fastframe.
-                    /* OLD CODE FOR REFERENCE ONLY
-                    this.svm.TekScope.MSOConnection.Write("ACQ:STATE 0");
-                    this.svm.TekScope.SetupAcquisition(2500, this.svm.PointsNeeded);
-                    */
-
-                    String _baseName = "line-" + rows.ToString(_lineNumberFormat) + ".wfm";
-                    String _RFString = _savePath + "RF-" + _baseName;
-                    String _DCString = _savePath + "DC-" + _baseName;
-                    String _RFSaveCMD = "SAVE:WAVEFORM CH1, \"" + _RFString + "\";*OPC?";
-                    String _DCSaveCMD = "SAVE:WAVEFORM CH4, \"" + _DCString + "\";*OPC?";
-
                     // Arm the oscillscope, then move along the scanline
-                    
-                    Console.WriteLine("Moving to: Y2: " + _endScan);
-                    //this.svm.TekScope.MSOConnection.Query("ACQ:STATE RUN;*OPC?", out response);
+                    this.svm.TekScope.ConfigureFastFrameAcq(this.svm.PointsNeeded);
                     Thread.Sleep(50);
+                    this.svm.TekScope._tekdriver.System.WriteString(":ACQ:STATE 1");
                     this.svm.MoveSingle(0, _endScan);
+                    Thread.Sleep(50);
+                    Console.WriteLine("Moving to: Y2: " + _endScan);
+                    this.svm.TekScope._tekdriver.System.WriteString(":ACQ:STATE 0");
+
+                    this.svm.TekScope.SaveWFMFileToSSD(rows);
+                    //this.svm.TekScope.MSOConnection.Query("ACQ:STATE RUN;*OPC?", out response);
                     //this.svm.TekScope.MSOConnection.Write("ACQ:STATE STOP");
                     // Write the files to disk
                     //this.svm.TekScope.MSOConnection.Query(_RFSaveCMD, out response);

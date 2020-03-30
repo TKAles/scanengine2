@@ -14,7 +14,7 @@ namespace wpfscanengine
 {
     public class MSOIVI
     {
-        private TekSeriesScope _tekdriver;
+        public TekSeriesScope _tekdriver;
         private string _addr;
         public string ResourceAddress
         {
@@ -22,13 +22,7 @@ namespace wpfscanengine
             set { _addr = value; }
         }
 
-        private double _triglvl;
-        public double TriggerLevel
-        {
-            get { return _triglvl; }
-            set { _triglvl = value; }
-
-        }
+        private string _triglvl = "250E-3";
 
         private bool _isConnected;
         public bool IsConnected
@@ -96,95 +90,76 @@ namespace wpfscanengine
             string _hscalecmd = ":HOR:POS 5;:HOR:SCA " + _horiztimescale;
             this._tekdriver.System.WriteString(_hscalecmd);
 
-            // Turn on the AFG and simulate a 20kHz laser pulse signal.
-            this.SimulateHelios();
+            // Uncomment to turn on the AFG and simulate a 20kHz laser pulse signal.
+            // this.SimulateHelios();
+            this.ConfigureTriggering(false);
 
+        }
+
+        public void ConfigureTriggering(bool _sim=false)
+        {
+            string _triggercmd;
+            if(_sim)
+            {
+                // simulation mode uses the 20khz pulse on the AFG to create dummy events for the fastframe.
+                _triggercmd = "TRIG:A:TYP EDGE;:TRIG:A:EDGE:SOU CH2;:TRIG:A:LEV:CH2 " + _triglvl + ";";
+            } else
+            {
+                // actual acquisition mode: Logic Trigger CH2&CH3 HIGH.
+                _triggercmd = "TRIG:A:TYP LOGI;:TRIG:A:LOGI:FUNC AND;:TRIG:A:LOGICP:CH1 X;:TRIG:A:LOGICP:CH2 HIGH;";
+                _triggercmd += ":TRIG:A:LOGICP:CH3 HIGH;:TRIG:A:LOGICP:CH4 X;";
+                _triggercmd += ":TRIG:A:LEV:CH2 " + _triglvl + ";:TRIG:A:LEV:CH3 1.0;";
+            }
+            this._tekdriver.System.WriteString(_triggercmd);
         }
 
         public void SimulateHelios()
         {
-            string _afgenable = "AFG:FUNC PULS;:AFG:HIGHL 1.0;:AFG:LOWL 0.0;:AFG:PULS:WID 5.0E-6;";
+            string _afgenable = "AFG:FUNC PULS;:AFG:HIGHL 1.0;:AFG:LOWL 0.0;:AFG:PULS:WID 5.0E-6;:AFG:FREQ 20000;";
             _afgenable += ":AFG:OUTP:STATE 1;";
             this._tekdriver.System.WriteString(_afgenable);
+        }
+
+        public void StopHeliosSim()
+        {
+            this._tekdriver.System.WriteString(":AFG:OUTP:STATE 0");
+        }
+
+        public void ConfigureFastFrameAcq(int _numpts = 0)
+        {
+            // Command to setup the fastframe sequence for a given number of frames with no summary frame
+            string _fastframecmd = "ACQ:STATE 0;:HOR:FAST:STATE 1;:HOR:FAST:COUN " 
+                + _numpts.ToString() + ";:HOR:FAST:SUMF:STATE 0;";
+            Console.WriteLine("FastFrame CMD: " + _fastframecmd);
+            this._tekdriver.System.WriteString(_fastframecmd);
+        }
+
+        public void SaveWFMFileToSSD(int _filenumber, string _path="C:\\TestScan\\")
+        {
+            string _rfbase = _path + "RF-";
+            string _dcbase = _path + "DC-";
+            string _filefmt = "00000";
+            string _rfsavecmd = "SAV:WAVE CH1, \"";
+            string _dcsavecmd = "SAV:WAVE CH4, \"";
+            _rfbase += _filenumber.ToString(_filefmt) + ".wfm";
+            _dcbase += _filenumber.ToString(_filefmt) + ".wfm";
+            _rfsavecmd += _rfbase + "\";";
+            _dcsavecmd += _dcbase + "\";";
+            Console.WriteLine("DCSave: " + _dcsavecmd + "\nRFSave: " + _rfsavecmd);
+            this._tekdriver.System.WriteString(_rfsavecmd + ";");
+            //this._tekdriver.System.ReadString();
+            this._tekdriver.System.WriteString(_dcsavecmd + ";");
+            //this._tekdriver.System.ReadString();
+
         }
         public void DisconnectMSO()
         {
             this._isConnected = false;
+            // If helios AFG mock is running, uncomment to stop on disconnect
+            // doesn't do much besides save some wear and tear on the MSO
+            // this.StopHeliosSim();
             _tekdriver.Close();
             return;
         }
-        /*
-         * 
-         * OLD CODE FOR REFERENCE ONLY....
-        public void ConnectMSO()
-        {
-            if(!IsConnected)
-            {
-                try
-                {
-                    MSOConnection.Open(this.ResourceAddress);
-                    _isConnected = true;
-                    this.InitalizeOscilloscope();
-                    this.SetupOscilloscope();
-                    this.ConfigureSRASTrigger();
-
-                } catch (Exception e)
-                {
-                    Console.WriteLine("An exception occurred. Exception: " + e.Data);
-                }
-            }
-        }
-
-        public void DisconnectMSO()
-        {
-            if(IsConnected)
-            {
-                this.MSOConnection.Close();
-                this._isConnected = false;
-            }
-        }
-
-        public void InitalizeOscilloscope()
-        {
-            Console.WriteLine("Initalizing Oscillscope...");
-            String _clearcommand = "*RST;:DIS:GLO:CH1:STATE 1;:DIS:GLO:CH2 STATE 1;:DIS:GLO:CH3 STATE1;:DIS:GLO:CH4: STATE 1";
-            String _labelcommand = ":CH1:LAB:NAM \"RF\";:CH2:LAB:NAM \"Optotrig\";:CH3:LAB:NAM \"MLSSignal\";:CH4:LAB:NAM \"DC\"";
-            this.MSOConnection.Write(_clearcommand);
-            Thread.Sleep(50);
-            this.MSOConnection.Write(_labelcommand);
-        }
-        
-        public void SetupOscilloscope()
-        {
-            String _terminationCommand = ":CH1:TER 50;:CH2:TER 1000000";
-            String _zoomCommand = ":CH1:SCA 20.0E-3;:CH2:SCA 1.0;:CH3:SCA 500.0E-3;:CH4:SCA 100.0E-3";
-            this.MSOConnection.Write(_terminationCommand);
-            Thread.Sleep(100);
-            this.MSOConnection.Write(_zoomCommand);
-            Thread.Sleep(100);
-        }
-
-        public void ConfigureSRASTrigger()
-        {
-            String _triggerconfig = "TRIGGER:A:TYPE LOGIC;:TRIGGER:A:LOGIC:FUNCTION AND;";
-            _triggerconfig += ":TRIGGER:A:LOGICPATTERN:CH1 X;:TRIGGER:A:LOGICPATTERN:CH2 HIGH;";
-            _triggerconfig += ":TRIGGER:A:LOGICPATTERN:CH3 HIGH;:TRIGGER:A:LOGICPATTERN:CH4 X;";
-            _triggerconfig += ":TRIGGER:A:LEVEL:CH2 " + this._triglvl.ToString() + ";:TRIGGER:A:LEVEL:CH3 2.0;:TRIGGER:A:MODE NORMAL";
-
-            this.MSOConnection.Write(_triggerconfig);
-            Thread.Sleep(100);
-        }
-
-        public void SetupAcquisition(int record_length, int frames_required)
-        {
-            string _ffString = "HORIZONTAL:MODE:RECORDLENGTH " + record_length.ToString();
-            _ffString += ";:HORIZONTAL:FASTFRAME:COUNT " + frames_required.ToString();
-            _ffString += ";:HORIZONTAL:FASTFRAME:STATE ON;:HORIZONTAL:FASTFRAME:SUMFRAME NONE;";
-
-            this.MSOConnection.Write(_ffString);
-            return;
-        }
-        */
-
     }
 }
