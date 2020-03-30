@@ -4,8 +4,7 @@ using System.Threading;
 using System.IO;
 using System.Text;
 using System.Windows;
-using Ivi.Visa;
-using NationalInstruments.Visa;
+
 
 public class SAWCaptureAgent
 {

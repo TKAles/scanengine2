@@ -90,7 +90,8 @@
                     <TextBox x:Name="ui_mls_ydesired" Grid.Column="6" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding YMoveCoord, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" MinWidth="75" />
 
-                    <Button x:Name="ui_connectMSO" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Connect MSO" Padding="10" />
+                    <Button x:Name="ui_connectMSO" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Connect MSO" Padding="10"
+                            Click="UiConnectMSO_Click"/>
                     <TextBlock Text="MSO5/MSO6 VXI Address:" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" />
                     <TextBox x:Name="ui_MSOaddress" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" 
                              MinWidth="250" Padding="5" Margin="5 0" Text="{Binding CurrentMSOAddress, Mode=TwoWay}"/>

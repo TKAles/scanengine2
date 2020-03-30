@@ -11,9 +11,9 @@ using Thorlabs.MotionControl.Benchtop.BrushlessMotorCLI;
 
 namespace wpfscanengine
 {
-    public partial class ScanengineViewModel : INotifyPropertyChanged
+    public partial class ScanengineViewModel 
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+            
         public string CurrentMLSSerial
         {
             get { return this.MLSStage.SerialNumber; }
@@ -22,6 +22,7 @@ namespace wpfscanengine
         }
         MLS203Stage MLSStage;
 
+        public MSOIVI TekScope;
         private string _msoaddr;
         // Oscilloscope VXi Address
         public string CurrentMSOAddress
@@ -111,6 +112,10 @@ namespace wpfscanengine
         {
             get { return this.MLSStage.IsXHomed && this.MLSStage.IsYHomed; }
         }
+        public bool IsMSOConnected
+        { 
+            get { return this.TekScope.IsConnected; }
+        }
 
         // Scan strategy information
         private int _linesneeded = 0;
@@ -148,8 +153,9 @@ namespace wpfscanengine
         public ScanengineViewModel(string _ser = "73000001", string _mso = "not set!")
         {
             this.MLSStage = new MLS203Stage();
+            this.TekScope = new MSOIVI();
             this.CurrentMLSSerial = _ser;
-            this.CurrentMSOAddress = _mso;
+            this.CurrentMSOAddress = this.TekScope.ResourceAddress;
 
             // Subscribe to the required properties
             Task _positionPolling = Task.Run(() =>
@@ -194,6 +200,7 @@ namespace wpfscanengine
         {
             MLSStage.MoveSingle(_axis, _coord);
         }
+
         public void StartEncoderPolling()
         {
             _pollingactive = true;

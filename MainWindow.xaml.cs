@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,13 +31,11 @@ namespace wpfscanengine
         public MainWindow()
         {
             this.svm = new ScanengineViewModel();
-            DataContext = this.svm;
             InitializeComponent();
+            DataContext = this.svm;
+            this.ui_MSOaddress.Text = this.svm.CurrentMSOAddress;
             // Start the encoder update task
             ui_updating = true;
-            Task _UiUpdateTask = Task.Run(() => this.UiUpdateTask());
-            this.ui_scanpitch.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
-            this.ui_scanspeed.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
         }
 
         private void UiConnectMLSStage_Click(object sender, RoutedEventArgs e)
@@ -147,6 +146,20 @@ namespace wpfscanengine
                         ui_yencoder_mm.Text = this.svm.YCurrent.ToString();
                     });
                 }
+                if (this.svm.IsMSOConnected)
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        ui_is_MSO_connected.Text = "True";
+                    });
+                } else
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        ui_is_MSO_connected.Text = "False";
+                    });
+                }
+                Thread.Sleep(500);
             }
         }
         private void UiScanVelocityComboChanged(object sender, RoutedEventArgs e)
@@ -189,15 +202,17 @@ namespace wpfscanengine
             // Get the latest values
             try
             { 
-            this.svm.YDelta = Convert.ToDecimal(ui_ydelta_mm.Text);
+            if(!this.ui_ydelta_mm.Text.Equals(""))
+                {
+                    this.svm.YDelta = Convert.ToDecimal(ui_ydelta_mm.Text);
+                }
             this.svm.XDelta = Convert.ToDecimal(ui_xdelta_mm.Text);
-
             this.svm.CalculateScanStrategy();
-            this.Dispatcher.Invoke(() =>
-            {
-                ui_rowsreqd_mm.Text = this.svm.LinesNeeded.ToString();
-                ui_ptsreqd.Text = this.svm.PointsNeeded.ToString();
-            });
+                this.Dispatcher.Invoke(() =>
+                {
+                    ui_rowsreqd_mm.Text = this.svm.LinesNeeded.ToString();
+                    ui_ptsreqd.Text = this.svm.PointsNeeded.ToString();
+                });
             } catch (NullReferenceException ex)
             {
                 return;
@@ -211,28 +226,101 @@ namespace wpfscanengine
             Console.WriteLine("Rows to Scan: " + this.svm.LinesNeeded + " Points per row: " + this.svm.PointsNeeded);
             Task _scanningTask = Task.Run(() =>
             {
+                this.Dispatcher.Invoke(() =>
+                {
+                    Button _scanBtn = (Button)sender;
+                    _scanBtn.IsEnabled = false;
+                    _scanBtn.Content = "Scanning in Progress";
+                    this.ui_is_scanning.Text = "True";
+
+                });
                 decimal _startScan = this.svm.YOrigin;
                 decimal _endScan = _startScan + this.svm.YDelta;
                 decimal _startStepover = this.svm.XOrigin;
+                /*
+                 * SCAN ENGINE LOGIC
+                 */
 
+                String _savePath = "C:/TestScan";
+                String _lineNumberFormat = "00000";
                 for (int rows = 0; rows < this.svm.LinesNeeded; rows++)
                 {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.ui_currentrow_mm.Text = rows.ToString();
+                    });
                     decimal _currentRowPosition = _startStepover + this.svm.ScanPitch * rows;
+                    Console.WriteLine("Starting Scan of line " + rows.ToString());
                     Console.WriteLine("Row Coordinate: " + _currentRowPosition.ToString());
                     // Move to beginning of scan
                     Console.WriteLine("Moving to: Y: " + _startScan);
                     this.svm.MoveSingle(0, _startScan);
                     Console.WriteLine("Moving to: X: " + _currentRowPosition);
                     this.svm.MoveSingle(1, _currentRowPosition);
-                    Console.WriteLine("Starting Scan of line " + rows.ToString());
+                    // Stage is at the beginning of the scan. Setup and arm oscillscope for fastframe.
+                    /* OLD CODE FOR REFERENCE ONLY
+                    this.svm.TekScope.MSOConnection.Write("ACQ:STATE 0");
+                    this.svm.TekScope.SetupAcquisition(2500, this.svm.PointsNeeded);
+                    */
+
+                    String _baseName = "line-" + rows.ToString(_lineNumberFormat) + ".wfm";
+                    String _RFString = _savePath + "RF-" + _baseName;
+                    String _DCString = _savePath + "DC-" + _baseName;
+                    String _RFSaveCMD = "SAVE:WAVEFORM CH1, \"" + _RFString + "\";*OPC?";
+                    String _DCSaveCMD = "SAVE:WAVEFORM CH4, \"" + _DCString + "\";*OPC?";
+
+                    // Arm the oscillscope, then move along the scanline
+                    
+                    Console.WriteLine("Moving to: Y2: " + _endScan);
+                    //this.svm.TekScope.MSOConnection.Query("ACQ:STATE RUN;*OPC?", out response);
+                    Thread.Sleep(50);
                     this.svm.MoveSingle(0, _endScan);
+                    //this.svm.TekScope.MSOConnection.Write("ACQ:STATE STOP");
+                    // Write the files to disk
+                    //this.svm.TekScope.MSOConnection.Query(_RFSaveCMD, out response);
+                    Thread.Sleep(100);
+                    //this.svm.TekScope.MSOConnection.Query(_DCSaveCMD, out response);
+
+                    Console.WriteLine("Linescan completed.");
                 }
+
+                this.Dispatcher.Invoke(() =>
+                {
+                    Button _scanBtn = (Button)sender;
+                    _scanBtn.IsEnabled = true;
+                    _scanBtn.Content = "Begin Scan";
+                    this.ui_is_scanning.Text = "False";
+
+                });
             });
 
         }
+        private void UiConnectMSO_Click(object sender, RoutedEventArgs e)
+        {
+            if(this.svm.IsMSOConnected == false)
+            { 
+                this.svm.TekScope.ConnectMSO();
+                this.Dispatcher.Invoke(() =>
+                {
+                    Button _msobutton = (Button)sender;
+                    _msobutton.Content = "Disconnect MSO";
+                });
+            } else
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    ui_connectMSO.Content = "Connect MSO";
+
+                });
+                this.svm.TekScope.DisconnectMSO();
+            }
+        }
         private void Ui_loaded(object sender, RoutedEventArgs e)
         {
-           
+            Task _UiUpdateTask = Task.Run(() => this.UiUpdateTask());
+            this.ui_scanpitch.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
+            this.ui_scanspeed.SelectionChanged += new SelectionChangedEventHandler(UiRecomputeScanStrategyCombo);
+
         }
 
     }

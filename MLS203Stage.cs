@@ -13,9 +13,9 @@ using Thorlabs.MotionControl.GenericMotorCLI.Settings;
 
 namespace wpfscanengine
 {
-	public class MLS203Stage : INotifyPropertyChanged
+	public class MLS203Stage //: INotifyPropertyChanged
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
+		//public event PropertyChangedEventHandler PropertyChanged;
 		private string _serial;
 		public string SerialNumber
 		{
@@ -152,10 +152,10 @@ namespace wpfscanengine
 			this._stepoverconfig = this._stepoverchannel.GetMotorConfiguration(this._stepoverchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			this._scanningconfig = this._scanningchannel.GetMotorConfiguration(this._scanningchannel.DeviceID, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings);
 			this._isConnected = true;
-			return 0;
-
 			// Start various stage polling functions
 			this._pollingactive = true;
+			return 0;
+
 		}
 
 		public int DisconnectStage()
