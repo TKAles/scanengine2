@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpfscanengine"
         mc:Ignorable="d"
-        Title="scanengine" Height="600" Width="1000">
+        Title="scanengine" Height="600" Width="1000" 
+        Loaded="Ui_loaded">
     <Grid>
         <TabControl>
             <TabItem Header="MLS + Oscillscope">
-                <Grid x:Name="MLSOscope" Background="#FFE5E5E5">
+                <Grid x:Name="MLSOscope" Background="#FFE5E5E5" Height="542" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -38,51 +39,62 @@
                     <TextBlock Text="x-delta [mm]:" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock Text="y-delta [mm]:" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock Text="Scan Pitch [mm]:" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <ComboBox x:Name="ui_scanpitch" Grid.Column="5" Grid.Row="1" SelectedIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center" >
-                        <ComboBoxItem> 0.050mm </ComboBoxItem>
-                        <ComboBoxItem> 0.100mm </ComboBoxItem>
-                        <ComboBoxItem> 0.250mm </ComboBoxItem>
+                    <ComboBox x:Name="ui_scanpitch" Grid.Column="5" Grid.Row="1" SelectedIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                              SelectionChanged="UiScanPitchComboChanged">
+                        <ComboBoxItem>0.050mm</ComboBoxItem>
+                        <ComboBoxItem>0.100mm</ComboBoxItem>
+                        <ComboBoxItem>0.250mm</ComboBoxItem>
                     </ComboBox>
                     <TextBlock Text="Scan Speed [mm/s]:" Grid.Column="4" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <ComboBox x:Name="ui_scanspeed" Grid.Column="5" Grid.Row="2" SelectedIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                    <ComboBox x:Name="ui_scanspeed" Grid.Column="5" Grid.Row="2" SelectedIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center"
+                              SelectionChanged="UiScanVelocityComboChanged">
                         <ComboBoxItem>50 mm / s</ComboBoxItem>
                         <ComboBoxItem>100 mm / s</ComboBoxItem>
                         <ComboBoxItem>150 mm / s</ComboBoxItem>
                     </ComboBox>
                     <TextBlock Text="x-position [mm]:" Grid.Column="0" Grid.Row="4" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <TextBlock x:Name="ui_xencoder_mm" Grid.Column="1" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="000.00"/>
+                    <TextBlock x:Name="ui_xencoder_mm" Grid.Column="1" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding XCurrent, Mode=OneWay}"/>
                     <TextBlock Text="y-position [mm]:" Grid.Column="2" Grid.Row="4" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <TextBlock x:Name="ui_yencoder_mm" Grid.Column="3" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="000.00"/>
+                    <TextBlock x:Name="ui_yencoder_mm" Grid.Column="3" Grid.Row="4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding YCurrent, Mode=OneWay}"/>
                     
                     <TextBlock Text="Current Row:" Grid.Column="0" Grid.Row="5" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock x:Name="ui_currentrow_mm" Grid.Column="1" Grid.Row="5" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0"/>
                     <TextBlock Text="Rows Required:" Grid.Column="2" Grid.Row="5" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock x:Name="ui_rowsreqd_mm" Grid.Column="3" Grid.Row="5" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0"/>
-                    
+                    <TextBlock Grid.Column="4" Grid.Row="4" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Points Per Row:"/>
+                    <TextBlock x:Name="ui_ptsreqd" Grid.Column="5" Grid.Row="4" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Text="0" Margin="5 0"/>
                     <TextBox x:Name="ui_xorigin_mm" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin}" MinWidth="75" />
-                    <TextBox x:Name="ui_yorigin_mm" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin}" MinWidth="75" />
-                    <TextBox x:Name="ui_xdelta_mm" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin}" MinWidth="75" />
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
+                    <TextBox x:Name="ui_xdelta_mm" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" 
+                             TextChanged="UiRecomputeScanStrategy"/>
+                    <TextBox x:Name="ui_yorigin_mm" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding YOrigin, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" />
                     <TextBox x:Name="ui_ydelta_mm" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding XOrigin}" MinWidth="75" />
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10 2" Text="{Binding YDelta, Mode=TwoWay, StringFormat='{}{0:0.00}'}" MinWidth="75" 
+                             TextChanged="UiRecomputeScanStrategy"/>
 
-                    <Button x:Name="ui_connectMLS" Grid.Column="0" Grid.Row="6" Content="Connect MLS203" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                    <Button x:Name="ui_connectMLS" Grid.Column="0" Grid.Row="6" Content="Connect MLS203" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"
+                            Click="UiConnectMLSStage_Click"/>
                     <TextBlock Text="MLS203 Serial:" Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    <TextBox x:Name="ui_mls_serial" Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" Text="73000001" 
+                    <TextBox x:Name="ui_mls_serial" Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding CurrentMLSSerial, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="5 0" MinWidth="75" />
-                    <Button x:Name="ui_homeMLS" Grid.Column="3" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Home Stage" Padding="10" />
-                    <Button x:Name="ui_moveMLS" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Move To:" Padding="10" />
+                    <Button x:Name="ui_homeMLS" Grid.Column="3" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Home Stage" Padding="10" 
+                            Click="UiHomeMLSStage_Click"/>
+                    <Button x:Name="ui_moveMLS" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Move To:" Padding="10"
+                            Click="UiMoveToPosition_Click"/>
                     <TextBlock Text="Desired X [mm]:" Grid.Column="5" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="Desired Y [mm]:" Grid.Column="6" Grid.Row="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                    <TextBox x:Name="ui_mls_xdesired" Grid.Column="5" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="000.00" 
+                    <TextBox x:Name="ui_mls_xdesired" Grid.Column="5" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding XMoveCoord, Mode=TwoWay}" 
                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" MinWidth="75" />
-                    <TextBox x:Name="ui_mls_ydesired" Grid.Column="6" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="000.00" Padding="5" MinWidth="75" />
+                    <TextBox x:Name="ui_mls_ydesired" Grid.Column="6" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding YMoveCoord, Mode=TwoWay}" 
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5" MinWidth="75" />
 
-                    <Button x:Name="ui_connectMSO" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Connect MSO" Padding="10" />
+                    <Button x:Name="ui_connectMSO" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Connect MSO" Padding="10"
+                            Click="UiConnectMSO_Click"/>
                     <TextBlock Text="MSO5/MSO6 VXI Address:" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    <TextBox x:Name="ui_MSOaddress" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="250" Padding="5" Margin="5 0"/>
+                    <TextBox x:Name="ui_MSOaddress" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                             MinWidth="250" Padding="5" Margin="5 0" Text="{Binding CurrentMSOAddress, Mode=TwoWay}"/>
 
                     <TextBlock Text="Phototrigger Level:" Grid.Row="7" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right" />
                     <TextBox x:Name="ui_triggervoltage" Grid.Row="7" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="75" 
@@ -95,16 +107,16 @@
                     <TextBlock Text="is_ready" Grid.Row="9" Grid.Column="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="is_scanning" Grid.Row="9" Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
                     <TextBlock Text="MSOMLS_ohno" Grid.Row="9" Grid.Column="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="ui_is_MLS_connected" Text="False" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLS_connected" Text="{Binding IsMLSConnected, Mode=OneWay}" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_MSO_connected" Text="False" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_MLSX_homed" Text="False" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_MLSY_homed" Text="False" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
-                    <TextBlock x:Name="ui_is_ready" Text="False" Grid.Row="10" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLSX_homed" Text="{Binding IsMLSXHomed}" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_MLSY_homed" Text="{Binding IsMLSYHomed}" Grid.Row="10" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
+                    <TextBlock x:Name="ui_is_ready" Text="{Binding IsReady}" Grid.Row="10" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_is_scanning" Text="False" Grid.Row="10" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
                     <TextBlock x:Name="ui_MSOMLS_ohno" Text="False" Grid.Row="10" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" />
 
                     <Button x:Name="ui_start_scan" Content="Begin Scan" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" 
-                            HorizontalAlignment="Stretch" FontSize="14" Padding="10" />
+                            HorizontalAlignment="Stretch" FontSize="14" Padding="10" Click="UiScanProcessStart"/>
                     <Button x:Name="ui_abort_scan" Content="Abort Scan" Grid.Row="8" Grid.Column="5" Grid.ColumnSpan="2" VerticalAlignment="Center" 
                             HorizontalAlignment="Stretch" FontSize="14" Padding="10" />
                 </Grid>
