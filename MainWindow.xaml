@@ -18,7 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="0.75*" />
             <RowDefinition Height="0.75*" />
-            <RowDefinition />
+            <RowDefinition Height="0.75*" />
             <RowDefinition Height="0.75*" />
             <RowDefinition />
             <RowDefinition />
@@ -40,13 +40,14 @@
                    HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
         <TextBlock Grid.Row="3" Grid.Column="1" Text="y-delta [mm]" 
                    HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="txtbx_xorigin" Grid.Row="2" Grid.Column="0" Text="000.00"
+        <TextBox x:Name="txtbx_xorigin" Grid.Row="2" Grid.Column="0" 
+                 Text="{Binding XOrigin}"
                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Padding="5"/>
-        <TextBox x:Name="txtbx_yorigin" Grid.Row="2" Grid.Column="1" Text="000.00"
+        <TextBox x:Name="txtbx_yorigin" Grid.Row="2" Grid.Column="1" Text="{Binding YOrigin}"
                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Padding="5"/>
-        <TextBox x:Name="txtbx_xdelta" Grid.Row="4" Grid.Column="0" Text="000.00"
+        <TextBox x:Name="txtbx_xdelta" Grid.Row="4" Grid.Column="0" Text="{Binding XDelta}"
                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Padding="5"/>
-        <TextBox x:Name="txtbx_ydelta" Grid.Row="4" Grid.Column="1" Text="000.00"
+        <TextBox x:Name="txtbx_ydelta" Grid.Row="4" Grid.Column="1" Text="{Binding YDelta}"
                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" Padding="5"/>
         
         <!-- Other Scan Properties - Stepover Resolution -->
@@ -69,7 +70,7 @@
                  VerticalAlignment="Bottom" HorizontalAlignment="Left" Padding="5"
                  MinWidth="240px" Margin="0" />
         <TextBox Grid.Row="1" Grid.Column="3" 
-                 x:Name="txt_stageaddr" Text="73000001"
+                 x:Name="txt_stageaddr" Text="{Binding MotionSerial}"
                  VerticalAlignment="Bottom" HorizontalAlignment="Left" Padding="5"
                  MinWidth="70px" Margin="0" />
 
@@ -81,33 +82,44 @@
                 Content="Connect Motion Stage" VerticalAlignment="Bottom"
                 Padding="4" Margin="10 10 10 0" />
 
-        <TextBlock Grid.Row="2" Grid.Column="2" FontSize="14" Text="Scanning Plan"
+        <TextBlock Grid.Row="3" Grid.Column="2" FontSize="14" Text="Scanning Plan"
                    HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-        <TextBlock Grid.Row="3" Grid.Column="2" Text="Points Per Row:" HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom" />
-        <TextBlock Grid.Row="4" Grid.Column="2" Text="Rows Requred:" HorizontalAlignment="Right"
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="Points Per Row:" HorizontalAlignment="Right"
                    VerticalAlignment="Center" />
-        <TextBlock Grid.Row="2" Grid.Column="4" FontSize="14" Text="Real-Time Information:"
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="Rows Requred:" HorizontalAlignment="Right"
+                   VerticalAlignment="Center" />
+        <TextBlock Grid.Row="3" Grid.Column="4" FontSize="14" Text="Real-Time Information:"
                    HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-        <TextBlock Grid.Row="3" Grid.Column="4" Text="Reported X Position:" 
+        <TextBlock Grid.Row="4" Grid.Column="4" Text="Reported X Position:" 
                    HorizontalAlignment="Right" VerticalAlignment="Center" />
-        <TextBlock Grid.Row="4" Grid.Column="4" Text="Reported Y Position:" 
-                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <TextBlock Grid.Row="5" Grid.Column="4" Text="Reported Y Position:" 
+                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,27,0,22" />
 
-        <TextBlock x:Name="txtb_ptsreq" Grid.Row="3" Grid.Column="3" Text="0"
+        <TextBlock x:Name="txtb_ptsreq" Grid.Row="4" Grid.Column="3" Text="0"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <TextBlock x:Name="txtb_rowsreq" Grid.Row="4" Grid.Column="3" Text="0"
+        <TextBlock x:Name="txtb_rowsreq" Grid.Row="5" Grid.Column="3" Text="0"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <TextBlock x:Name="txtb_xpos" Grid.Row="3" Grid.Column="5" Text="00.0000"
+        <TextBlock x:Name="txtb_xpos" Grid.Row="4" Grid.Column="5" Text="{Binding XPosition}"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <TextBlock x:Name="txtb_ypos" Grid.Row="4" Grid.Column="5" Text="00.0000"
+        <TextBlock x:Name="txtb_ypos" Grid.Row="5" Grid.Column="5" Text="{Binding YPosition}"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-        <Button x:Name="btn_homestg" Grid.Row="5" Grid.Column="3" Content="Home Stage"
+        <Button x:Name="btn_homestg" Grid.Row="6" Grid.Column="3" Content="Home Stage"
                 FontSize="16" Margin="10" />
-        <Button x:Name="btn_startscan" Grid.Row="5" Grid.Column="4" Content="Start Scan"
+        <Button x:Name="btn_startscan" Grid.Row="6" Grid.Column="4" Content="Start Scan"
                 FontSize="16" Margin="10" />
-        <Button x:Name="btn_manumove" Grid.Row="5" Grid.Column="5" Content="Move to XY Origin"
+        <Button x:Name="btn_manumove" Grid.Row="6" Grid.Column="5" Content="Move to XY Origin"
                 FontSize="14" Margin="10" />
+        <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" 
+                   VerticalAlignment="Center" Text="Grating Angle:" Padding="5"/>
+        <ComboBox x:Name="cmb_irangle" Grid.Row="2" Grid.Column="3" Margin="5 20 20 10" />
+        <TextBlock Grid.Row="2" Grid.Column="4" Text="DDR25/M SN:" HorizontalAlignment="Center"/>
+        <TextBox x:Name="txtb_ddr25msn" Text="{Binding RotationSerial}" Grid.Row="2" Grid.Column="4"
+                 Margin="20 20 20 10" HorizontalContentAlignment="Center"
+                 VerticalContentAlignment="Center"/>
+        <Button x:Name="btn_connectddr25m" Grid.Row="2" Grid.Column="6" 
+                Content="Connect Rotation" Padding="4" Margin="10"/>
+
+
     </Grid>
 </Window>
